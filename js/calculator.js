@@ -17,6 +17,7 @@ export default class Calc {
         
         this.display = document.querySelector(".calc__screen");
         this.displayText = this.display.getAttribute("value");
+        this.history = [];
         
         const btns = document.querySelectorAll(".btn");
         btns.forEach(btn => {
@@ -85,7 +86,7 @@ export default class Calc {
             Calc.getLastNum(this.displayText) === "." ||
             this.displayText == Calc.ERROR_STR) && classList.contains("result")) {
             
-                this.output(Calc.ERROR_STR);
+                this.output(["0"]);
         }
         
         if (Calc.getLastNum(this.displayText).length !== 0 && Calc.getLastNum(this.displayText) !== "." && 
@@ -95,7 +96,8 @@ export default class Calc {
                 
         }
         
-        if (classList.contains("result")) {
+        if (classList.contains("result") && Calc.getSymbolCount(this.displayText) > 1 &&
+            /\d/.test(Calc.getLastNum(this.displayText))) {
             this.evalExpression(this.displayText);
         }
 
@@ -166,7 +168,7 @@ export default class Calc {
 
         if (!Calc.multiplyOrDivide.test(output) && !Calc.addOrSubtract.test(output)) {
             
-                this.outputAnswer(output);
+                this.outputAnswer([...this.displayText, " = ", output]);
                 return;
         }
 
@@ -189,7 +191,6 @@ export default class Calc {
         let arrToOutput = isAnswer || this.displayText === Calc.ERROR_STR ?
             [value] : [...this.displayText, value];
 
-
         if (isAnswer) {
             this.display.classList.remove("answer");
         }
@@ -208,16 +209,66 @@ export default class Calc {
 
     }
 
-    outputAnswer(answer) {
+    addToHistory(arr) {
 
-        let result = answer;
-        this.output( [result] );
+        if (this.history.length === 3) {
+            
+            this.history.shift();
+            
+        } 
+        this.history.push(arr);
+    }
+
+    clearHistory() {
+
+        let historyContainer = document.querySelector(".calc__history");
+
+        while(historyContainer.firstChild){
+            historyContainer.lastChild.remove();
+        }
+
+    }
+
+    outputHistory() {
+        
+        let historyContainer = document.querySelector(".calc__history");
+
+        this.clearHistory();
+
+        for (let i = 0; i < this.history.length; i++) {
+
+            let historyItem = document.createElement("div");
+            historyItem.classList.add("history__item");
+
+            let historyItemText = this.history[i].join("");
+
+            if (i === this.history.length - 1) {
+
+                historyItem.textContent = historyItemText.slice(0, historyItemText.indexOf("=") + 1);
+                
+            } else {
+
+                historyItem.textContent = historyItemText;
+
+            }
+
+            historyContainer.appendChild(historyItem);
+
+        }
+    }
+
+    outputAnswer(answerArr) {
+
+        this.addToHistory(answerArr);
+        this.outputHistory();
+
+        this.output([answerArr[answerArr.length - 1]]);
         this.display.classList.add("answer");
 
     }
 
     output(strarr) {
-
+        
         let resultStr = strarr.join("");
         this.display.setAttribute("value", resultStr);
         this.displayText = resultStr;
