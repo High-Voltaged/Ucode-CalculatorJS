@@ -2,20 +2,23 @@ export default class Calc {
 
     static multiplyOrDivide = /(\-*\d*\.?\d*)\s{1}([*/]+)\s{1}(\-*\d*\.?\d*)/;
     static addOrSubtract = /(\-*\d*\.?\d*)\s{1}([+-]+)\s{1}(\-*\d*\.?\d*)/;
+    static toggleNum = /(\-*\d*\.?\d*)\s{1}(\+\/\-)\s{1}/;
+    static percent = /(\-*\d*\.?\d*)\s{1}([%]+)\s{1}/;
+
     static ERROR_STR = "ERROR";
     static operations = {
-        "-": function(first, second)    { return subtract(first, second) },
-        "+": function(first, second)    { return add(first, second) },
-        "/": function(first, second)    { return divide(first, second) },
-        "*": function(first, second)    { return multiply(first, second) },
-        "%": function(num)              { return toPercent(num) },
-        "sign": function(num)           { return toggleSignFor(num) }
+        "-": function(first, second)    { return Calc.subtract(first, second) },
+        "+": function(first, second)    { return Calc.add(first, second) },
+        "/": function(first, second)    { return Calc.divide(first, second) },
+        "*": function(first, second)    { return Calc.multiply(first, second) },
+        "%": function(num)              { return Calc.toPercent(num) },
+        "sign": function(num)           { return Calc.toggleSignFor(num) }
     };
 
     constructor () {
         
         this.display = document.querySelector(".calc__screen");
-        this.displayText = this.display.textContent;
+        this.displayText = this.display.getAttribute("value");
         // this.resultBtn = document.querySelector(".result-btn");
         
         const btns = document.querySelectorAll(".btn");
@@ -49,11 +52,11 @@ export default class Calc {
 
     }
 
-    static divide(first, second)    { return first / second }
+    static divide(first, second)    { return parseFloat((first / second).toFixed(10)); }
 
-    static add(first, second)       { return first + second }
+    static add(first, second)       { return parseFloat((first + second).toFixed(10)); }
 
-    static subtract(first, second)  { return first - second }
+    static subtract(first, second)  { return parseFloat((first - second).toFixed(10)); }
 
     static toPercent(num)           { return parseFloat(num / 100).toFixed(2); }
     
@@ -65,44 +68,86 @@ export default class Calc {
 
         if (classList.contains("clear")) {
             this.output([]);
+            console.log("here");
         }
-
+        
         if (classList.contains("num")) {
-            this.insertValue(target.textContent);
-        }
-
-        if (classList.contains("point") && getLastNum(this.displayText)) {
+            console.log("here");
             this.insertValue(target.textContent);
         }
         
-        if ((getLastNum(this.displayText).length === 0 ||
-            getLastNum(this.displayText) === "." ||
-            this.displayText == ERROR_STR) && classList.contains("result")) {
-                this.output(ERROR_STR);
+        if (classList.contains("point") && Calc.getLastNum(this.displayText).indexOf(".") === -1) {
+            console.log("here");
+            this.insertValue(target.textContent);
         }
-
-        if (getLastNum(this.displayText).length !== 0 && getLastNum(this.displayText) !== "." && 
+        
+        if ((Calc.getLastNum(this.displayText).length === 0 ||
+            Calc.getLastNum(this.displayText) === "." ||
+            this.displayText == Calc.ERROR_STR) && classList.contains("result")) {
+            
+                this.output(Calc.ERROR_STR);
+                console.log("here");
+        }
+        
+        if (Calc.getLastNum(this.displayText).length !== 0 && Calc.getLastNum(this.displayText) !== "." && 
             classList.contains("operator")) {
+            
+                // if (Calc.getLastNum(this.displayText)[0] !== "-" && target.classList.contains("sign"))
+                //     this.insertOperator("sign")
+
                 this.insertOperator(target.textContent);
+                console.log("here");
         }
         
         if (classList.contains("result")) {
-            return this.evalExpression(this.displayText);
+            console.log("here");
+            this.evalExpression(this.displayText);
         }
 
     }
 
     evalExpression(output) {
 
+        let solveExpression = (expr, output) => {
+
+            const matches = expr.exec(output);
+            console.log("matches " + matches);
+            const first = parseFloat(matches[1]);
+            const operator = matches[2];
+            const second = matches[3] ? parseFloat(matches[3]) : null;
         
+            let reduced = null;
+            // if (/\+\/\-/.test(operator)) {
+        
+            //     reduced = output.replace(expr, operations["sign"](first));
+        
+            // }
+            reduced = output.replace(expr, Calc.operations[operator](first, second));
+            this.evalExpression(reduced);
+
+        }
+
+        console.log(output);
+        if (!/[%+\/*-]|[\+\/\-]{1}\s/.test(output)) {
+            this.outputAnswer(output);
+            return;
+        }
+
+
+        let regex = (/[*/]\s/.test(output)) ? Calc.multiplyOrDivide :
+                    (/[+-]\s/.test(output)) ? Calc.addOrSubtract :
+                     Calc.percent;
+
+        solveExpression(regex, output);
 
     }
 
     insertValue(value) {
 
         let isAnswer = this.display.classList.contains("answer");
-        let arrToOutput = isAnswer || this.displayText === ERROR_STR ?
+        let arrToOutput = isAnswer || this.displayText === Calc.ERROR_STR ?
             [value] : [...this.displayText, value];
+
 
         if (isAnswer) {
             this.display.classList.remove("answer");
@@ -122,9 +167,21 @@ export default class Calc {
 
     }
 
+    outputAnswer(answer) {
+
+        let result = answer;
+        this.output( [result] );
+        this.display.classList.add("answer");
+
+    }
+
     output(strarr) {
 
-        this.display.textContent = strarr.join("");
+        
+        let resultStr = strarr.join("");
+        this.display.setAttribute("value", resultStr);
+        this.displayText = resultStr;
+        this.display.scrollLeft = this.display.scrollWidth;
 
     }
 
