@@ -19,6 +19,7 @@ export default class Calc {
         
         this.display = document.querySelector(".calc__screen");
         this.displayText = this.display.getAttribute("value");
+        this.history = [];
         // this.resultBtn = document.querySelector(".result-btn");
         
         const btns = document.querySelectorAll(".btn");
@@ -129,7 +130,7 @@ export default class Calc {
 
         console.log(output);
         if (!/[%+\/*-]|[\+\/\-]{1}\s/.test(output)) {
-            this.outputAnswer(output);
+            this.outputAnswer([...this.displayText, " = ", output]);
             return;
         }
 
@@ -167,16 +168,69 @@ export default class Calc {
 
     }
 
-    outputAnswer(answer) {
+    addToHistory(arr) {
 
-        let result = answer;
-        this.output( [result] );
+        if (this.history.length === 3) {
+            
+            this.history.shift();
+            this.history.push(arr);
+
+        } else {
+
+            this.history.push(arr);
+
+        }
+    }
+
+    clearHistory() {
+
+        let historyContainer = document.querySelector(".calc__history");
+
+        while(historyContainer.firstChild){
+            historyContainer.lastChild.remove();
+        }
+
+    }
+
+    outputHistory() {
+        
+        let historyContainer = document.querySelector(".calc__history");
+
+        this.clearHistory();
+
+        for (let i = 0; i < this.history.length; i++) {
+
+            let historyItem = document.createElement("div");
+            historyItem.classList.add("history__item");
+
+            let historyItemText = this.history[i].join("");
+
+            if (i === this.history.length - 1) {
+
+                historyItem.textContent = historyItemText.slice(0, historyItemText.indexOf("=") + 1);
+                
+            } else {
+
+                historyItem.textContent = historyItemText;
+
+            }
+
+            historyContainer.appendChild(historyItem);
+
+        }
+    }
+
+    outputAnswer(answerArr) {
+
+        this.addToHistory(answerArr);
+        this.outputHistory();
+
+        this.output([answerArr[answerArr.length - 1]]);
         this.display.classList.add("answer");
 
     }
 
     output(strarr) {
-
         
         let resultStr = strarr.join("");
         this.display.setAttribute("value", resultStr);

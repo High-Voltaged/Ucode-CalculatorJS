@@ -8,7 +8,11 @@
     color: white;
 }
 
-.history_item {
+.calc__history {
+    text-align: right;
+}
+
+.history__item {
     color: rgb(230, 230, 230);
     font-size: 12px;
     margin: 5px 0;
