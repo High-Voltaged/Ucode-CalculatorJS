@@ -2,7 +2,6 @@ export default class Calc {
 
     static multiplyOrDivide = /(\-*\d*\.?\d*)\s{1}([*/]+)\s{1}(\-*\d*\.?\d*)/;
     static addOrSubtract = /(\-*\d*\.?\d*)\s{1}([+-]+)\s{1}(\-*\d*\.?\d*)/;
-    static percentRatio = /(\-*\d*\.?\d*)\s{1}([%]+)/;
 
     static ERROR_STR = "ERROR";
     static operations = {
@@ -10,7 +9,6 @@ export default class Calc {
         "+": function(first, second)    { return Calc.add(first, second) },
         "/": function(first, second)    { return Calc.divide(first, second) },
         "*": function(first, second)    { return Calc.multiply(first, second) },
-        "%": function(num)              { return Calc.toPercent(num) }
     };
 
     constructor () {
@@ -98,7 +96,7 @@ export default class Calc {
         
         if (classList.contains("result") && Calc.getSymbolCount(this.displayText) > 1 &&
             /\d/.test(Calc.getLastNum(this.displayText))) {
-            this.evalExpression(this.displayText);
+                this.evalExpression(this.displayText);
         }
 
     }
@@ -173,19 +171,19 @@ export default class Calc {
         }
 
         let regex = (/[*/]\s/.test(output)) ? Calc.multiplyOrDivide : Calc.addOrSubtract;
-
+        
         solveExpression(regex, output);
-
+        
     }
 
     insertValue(value) {
-
-        if (/[0]/.test(this.displayText) && Calc.getSymbolCount(this.displayText) == 1)
-            this.displayText = "";
-
-        if (/[%]/.test(Calc.getLastNum(this.displayText))) {
-            this.displayText = "";
+    
+        let resultArr = this.displayText.split(" ");
+        let lastNum = resultArr[resultArr.length - 1];
+        if (/[0]/.test(lastNum) && lastNum.length == 1 && value !== ".") {
+            resultArr[resultArr.length - 1] = "";
         }
+        this.displayText = resultArr.join(" ");
 
         let isAnswer = this.display.classList.contains("answer");
         let arrToOutput = isAnswer || this.displayText === Calc.ERROR_STR ?
@@ -195,9 +193,9 @@ export default class Calc {
             this.display.classList.remove("answer");
         }
         this.output(arrToOutput);
-
+        
     }
-
+    
     insertOperator(operator) {
 
         let operatorStr = ` ${operator} `;
@@ -208,9 +206,9 @@ export default class Calc {
         this.output(arrToOutput);
 
     }
-
+    
     addToHistory(arr) {
-
+        
         if (this.history.length === 3) {
             
             this.history.shift();
@@ -218,62 +216,62 @@ export default class Calc {
         } 
         this.history.push(arr);
     }
-
+    
     clearHistory() {
-
+        
         let historyContainer = document.querySelector(".calc__history");
-
-        while(historyContainer.firstChild){
+        
+        while (historyContainer.firstChild){
             historyContainer.lastChild.remove();
         }
-
+        
     }
-
+    
     outputHistory() {
         
         let historyContainer = document.querySelector(".calc__history");
-
+        
         this.clearHistory();
-
+        
         for (let i = 0; i < this.history.length; i++) {
-
+            
             let historyItem = document.createElement("div");
             historyItem.classList.add("history__item");
-
+            
             let historyItemText = this.history[i].join("");
-
+            
             if (i === this.history.length - 1) {
-
+                
                 historyItem.textContent = historyItemText.slice(0, historyItemText.indexOf("=") + 1);
                 
             } else {
-
+                
                 historyItem.textContent = historyItemText;
-
+                
             }
-
+            
             historyContainer.appendChild(historyItem);
-
+            
         }
     }
-
+    
     outputAnswer(answerArr) {
-
+        
         this.addToHistory(answerArr);
         this.outputHistory();
-
+        
         this.output([answerArr[answerArr.length - 1]]);
         this.display.classList.add("answer");
-
+        
     }
-
+    
     output(strarr) {
         
         let resultStr = strarr.join("");
         this.display.setAttribute("value", resultStr);
         this.displayText = resultStr;
         this.display.scrollLeft = this.display.scrollWidth;
-
+        
     }
-
+    
 }
