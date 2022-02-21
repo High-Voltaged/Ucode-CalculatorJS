@@ -106,11 +106,12 @@ export default class Calc {
         if (classList.contains("sign")) {
                   
             if (/(\-?\d)/.test(this.displayText) && Calc.getSymbolCount(this.displayText) == 1)
-                this.handleToggleEvaluation();
-        
+            this.handleToggleEvaluation();
+            
         } else if (classList.contains("percent")) {
-          
-            this.handleToPercent();
+            
+            if (/(\-?\d)/.test(this.displayText) && Calc.getSymbolCount(this.displayText) == 1)
+                this.handleToPercent();
         
         } else {
 
