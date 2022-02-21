@@ -1,1 +1,113 @@
-.
+* {
+    box-sizing: border-box;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+}
+
+.main-container {
+    width: 100%;
+    height: 100vh;
+    /* background-color: rgb(217, 217, 217); */
+    background: linear-gradient(to right, rgb(142, 144, 237), rgb(94, 169, 240));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calc {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 17px;
+    overflow: hidden;
+    width: 320px;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    background: linear-gradient(to bottom right, rgb(100, 214, 248), rgb(44, 109, 243));
+}
+
+.calc__title {
+    font-size: 16px;
+    color: white;
+    font-weight: normal;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.calc__display {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: end;
+    padding: 10px 25px 40px;
+    color: white;
+    /* background: linear-gradient(to bottom right, rgb(100, 214, 248), rgb(80, 151, 246)); */
+}
+
+.calc__history {
+
+}
+
+.history_item {
+    color: rgb(230, 230, 230);
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+.calc__screen {
+    width: 100%;
+    font-size: 34px;
+    text-align: right;
+    color: white;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 5px 0 0;
+}
+
+
+.calc__control {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px 5px;
+    padding: 10px 10px 15px;
+    background-color: white;
+}
+
+.btn {
+    border: none;
+    font-size: 22px;
+    padding: 20px 10px;
+    background-color: white;
+    transition: box-shadow 0.2s linear;
+    color: black;
+}
+
+.btn:hover {
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.btn.clear {
+    color: rgb(208, 124, 88);
+}
+
+.btn.operator {
+    color: rgb(66, 148, 241);
+}
+
+.btn.result {
+    background: linear-gradient(to top left, rgb(100, 214, 248), rgb(80, 151, 246));
+    color: white;
+    padding: 12px 0px;
+    margin: 8px 0px 8px 10px;
+}
+
+.result {
+    grid-column: 3 / span 2;
+}
