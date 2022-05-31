@@ -1,0 +1,47 @@
+.calc__control {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px 5px;
+    padding: 10px 10px 15px;
+    background-color: white;
+}
+
+.btn {
+    border: none;
+    font-size: 22px;
+    padding: 20px 10px;
+    background-color: white;
+    transition: box-shadow 0.2s linear;
+    color: rgb(3, 6, 13);
+    user-select: none;
+}
+
+.btn:active {
+    transition: all 0.2s linear;
+    background-color: rgb(240, 240, 240);
+}
+
+.btn:hover {
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.btn.clear {
+    color: rgb(208, 124, 88);
+}
+
+.btn.num {
+    color: rgb(3, 6, 13);
+}
+
+.btn.operator {
+    color: rgb(66, 148, 241);
+}
+
+.btn.result {
+    grid-column: 3 / span 2;
+    background: linear-gradient(to top left, rgb(100, 214, 248), rgb(80, 151, 246));
+    color: white;
+    padding: 12px 0px;
+    margin: 8px 0px 8px 10px;
+}
